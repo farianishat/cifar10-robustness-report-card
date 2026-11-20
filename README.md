@@ -42,14 +42,14 @@ The table below summarizes the headline comparison between the **Standard-Traine
 | Metric | Standard Model | Adversarial Model | Net Shift (Adv vs. Std) |
 | :--- | :---: | :---: | :---: |
 | **Peak Validation Accuracy (Clean)** | `69.80%` (Epoch 11) | `48.30%` (Epoch 8) | `-21.50%` |
-| **Test Clean Accuracy ($\epsilon = 0$)** | `69.65%` | `50.20%` | `-19.45%` |
-| **PGD Accuracy ($\epsilon = 4/255$)** | `3.15%` | `36.20%` | `+33.05%` |
-| **PGD Accuracy ($\epsilon = 8/255$)** | `0.05%` | `23.95%` | `+23.90%` |
-| **PGD Attack Success Rate ($\epsilon = 8/255$)** | `99.93%` | `52.49%` | `-47.44%` |
-| **Mean Clean Softmax Confidence** | `0.6817` | `0.3546` | `-0.3271` |
-| **Mean PGD Softmax Confidence ($\epsilon = 8/255$)** | `0.9015` | `0.3337` | `-0.5678` |
+| **Test Clean Accuracy ($\epsilon = 0$)** | `68.70%` | `50.20%` | `-18.50%` |
+| **PGD Accuracy ($\epsilon = 4/255$)** | `2.25%` | `36.20%` | `+33.95%` |
+| **PGD Accuracy ($\epsilon = 8/255$)** | `0.00%` | `23.95%` | `+23.95%` |
+| **PGD Attack Success Rate ($\epsilon = 8/255$)** | `100.00%` | `52.49%` | `-47.51%` |
+| **Mean Clean Softmax Confidence** | `0.6631` | `0.3546` | `-0.3085` |
+| **Mean PGD Softmax Confidence ($\epsilon = 8/255$)** | `0.8933` | `0.3337` | `-0.5596` |
 
-**Bottom Line:** Standard training produces a brittle model that collapses from **69.65%** clean accuracy to **0.05%** under PGD ($\epsilon = 8/255$) while becoming *more* confident in its wrong predictions (mean confidence jumps from **0.6817** to **0.9015**). PGD adversarial training trades **19.45%** of clean accuracy to recover **+23.90%** PGD accuracy at $\epsilon = 8/255$, cuts Attack Success Rate nearly in half, and preserves stable confidence and feature geometry under attack.
+**Bottom Line:** Standard training produces a brittle model that collapses from **68.70%** clean accuracy to **0.00%** under PGD ($\epsilon = 8/255$) while becoming *more* confident in its wrong predictions (mean confidence jumps from **0.6631** to **0.8933**). PGD adversarial training trades **18.50%** of clean accuracy to recover **+23.95%** PGD accuracy at $\epsilon = 8/255$, cuts Attack Success Rate nearly in half, and preserves stable confidence and feature geometry under attack.
 
 ---
 
@@ -267,11 +267,11 @@ Recorded directly in [`results/robustness_report_card.md`](results/robustness_re
 
 | Model | $\epsilon$ ($L_\infty$) | Clean Accuracy | Adversarial Accuracy | Attack Success Rate (ASR) | Mean Clean Confidence | Mean Adversarial Confidence |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Standard** | `0/255` | `69.65%` | `69.65%` | `0.00%` | `0.6817` | `0.6817` |
-| **Standard** | `1/255` | `69.65%` | `44.05%` | `36.76%` | `0.6817` | `0.6437` |
-| **Standard** | `2/255` | `69.65%` | `21.95%` | `68.49%` | `0.6817` | `0.6674` |
-| **Standard** | `4/255` | `69.65%` | `3.15%` | `95.48%` | `0.6817` | `0.7815` |
-| **Standard** | `8/255` | `69.65%` | `0.05%` | `99.93%` | `0.6817` | `0.9015` |
+| **Standard** | `0/255` | `68.70%` | `68.70%` | `0.00%` | `0.6631` | `0.6631` |
+| **Standard** | `1/255` | `68.70%` | `40.90%` | `40.47%` | `0.6631` | `0.6257` |
+| **Standard** | `2/255` | `68.70%` | `19.85%` | `71.11%` | `0.6631` | `0.6477` |
+| **Standard** | `4/255` | `68.70%` | `2.25%` | `96.72%` | `0.6631` | `0.7635` |
+| **Standard** | `8/255` | `68.70%` | `0.00%` | `100.00%` | `0.6631` | `0.8933` |
 | **Adversarial** | `0/255` | `50.20%` | `50.20%` | `0.00%` | `0.3546` | `0.3546` |
 | **Adversarial** | `1/255` | `50.20%` | `46.75%` | `7.07%` | `0.3546` | `0.3493` |
 | **Adversarial** | `2/255` | `50.20%` | `43.65%` | `13.35%` | `0.3546` | `0.3448` |
@@ -331,7 +331,7 @@ All figures below are generated automatically at 300 DPI and stored in `figures/
 
 ![Prediction Confidence Histograms](figures/confidence_histograms.png)
 
-* **Overconfident Misclassification in the Standard Model:** On clean inputs, softmax confidence is spread across `[0.2, 1.0]` (`mean` $\approx 0.663$–$0.682$). Under PGD ($\epsilon = 8/255$), the distribution slams into the `0.95–1.00` bin (`mean` $\approx 0.892$–$0.902$)—meaning the model is nearly **100% wrong** while reporting **~90% confidence**. *(Small `~0.01` differences between the CLI report table and plotted histogram reflect random PGD restarts and best-validation checkpoint evaluation across runs.)*
+* **Overconfident Misclassification in the Standard Model:** On clean inputs, softmax confidence is spread across `[0.2, 1.0]` (`mean` $= 0.663$). Under PGD ($\epsilon = 8/255$), the distribution slams into the `0.95–1.00` bin (`mean` $\approx 0.89$), meaning the model is **100% wrong** while reporting **~89% confidence**.
 * **Calibrated Stability in the Adversarial Model:** Clean (`mean = 0.355`) and PGD (`mean = 0.334`) confidence histograms overlap closely, eliminating pathological overconfidence under attack.
 
 ---
@@ -347,9 +347,9 @@ All figures below are generated automatically at 300 DPI and stored in `figures/
 
 ## Key Insights & Lessons Learned
 
-1. **Clean Accuracy Alone Hides Severe Brittleness:** A classifier achieving nearly `70%` accuracy on clean CIFAR-10 images can be reduced to `0.05%` accuracy (`99.93%` ASR) with pixel perturbations invisible to humans.
-2. **The Robustness–Accuracy Trade-Off Is Real and Measurable:** PGD adversarial training reduced clean test accuracy by `19.45%` (`69.65%` $\rightarrow$ `50.20%`) in exchange for a `+23.90%` gain in PGD accuracy at $\epsilon = 8/255$ (`0.05%` $\rightarrow$ `23.95%`) and `+33.05%` at $\epsilon = 4/255$ (`3.15%` $\rightarrow$ `36.20%`).
-3. **Confidence Scores Cannot Be Trusted on Standard Models Under Attack:** High softmax probability does not imply correctness—adversarial examples push standard classifiers *further* away from decision boundaries into high-confidence error zones (`0.90` mean confidence at near-zero accuracy).
+1. **Clean Accuracy Alone Hides Severe Brittleness:** A classifier achieving nearly `70%` accuracy on clean CIFAR-10 images can be reduced to `0.00%` accuracy (`100%` ASR) with pixel perturbations invisible to humans.
+2. **The Robustness–Accuracy Trade-Off Is Real and Measurable:** PGD adversarial training reduced clean test accuracy by `18.50` points (`68.70%` $\rightarrow$ `50.20%`) in exchange for a `+23.95` point gain in PGD accuracy at $\epsilon = 8/255$ (`0.00%` $\rightarrow$ `23.95%`) and `+33.95` points at $\epsilon = 4/255$ (`2.25%` $\rightarrow$ `36.20%`).
+3. **Confidence Scores Cannot Be Trusted on Standard Models Under Attack:** High softmax probability does not imply correctness—adversarial examples push standard classifiers *further* away from decision boundaries into high-confidence error zones (`0.89` mean confidence at zero accuracy).
 4. **Generalization Beyond Training Radius:** Even though adversarial training only used 3-step PGD at $\epsilon = 4/255$ to stay CPU-friendly, the resulting model maintained meaningful robustness against stronger 10-step PGD at $\epsilon = 8/255$.
 5. **Representation Stability Drives Robustness:** Comparing penultimate-layer t-SNE plots directly shows *why* adversarial training works: it suppresses brittle, high-frequency features so internal activations barely drift under bounded perturbations.
 
